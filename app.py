@@ -15,13 +15,19 @@ from sklearn.metrics import accuracy_score
 
 
 st.set_page_config(
-    page_title="Online Food Order Dataset",
-    layout="wide" )
+    page_title="Online Food Order Dataset 🍔",
+    layout="centered",
+    page_icon="🍔" )
 
 # %% Live Reload
 from liveReload import live_reload
 live_reload()
 
+st.sidebar.title("Online Food Order Dataset")
+# st.sidebar.markdown("Use the options below to filter the data or change the visualization settings.")
+st.sidebar.divider()
+st.sidebar.page_link("app.py", label="Home", icon="🏠")
+st.sidebar.page_link("app.py", label="Map", icon="🗺️")
 
 
 
@@ -33,15 +39,46 @@ st.markdown("**Source:** [Kaggle](https://www.kaggle.com/datasets/sudarshan24byt
 
 st.divider()
 
-# Load dataset
-@st.cache_data
-def load_data():
-    data = pd.read_csv('onlinefoods.csv')
-    return data
 
-data = load_data()
+# col1, col2 = st.columns([2, 1])
+
+# Load dataset
+# @st.cache_data
+# def load_data():
+#     data = pd.read_csv('onlinefoods.csv')
+#     return data
+
+
+# data = load_data()
+data = pd.read_csv('onlinefoods.csv')
 st.write("## Dataset")
 st.write(data)
+
+
+
+# st.write("## Dataset Summary")
+# st.write(data.describe())
+
+
+
+
+
+
+# Display the map
+st.write("## Map")
+st.write("Data was collected from the following locations")
+st.map(data[['latitude', 'longitude']])
+
+
+
+
+
+
+
+
+
+
+
 
 # Outlier Detection
 st.write("## Outlier Detection")
