@@ -12,8 +12,26 @@ from library.bin import label_encode_all
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
-st.title("SVM x Decision Trees x Random Forest Performance Comparison")
-st.markdown("by Dominador G. Dano Jr.")
+
+
+st.set_page_config(
+    page_title="Online Food Order Dataset",
+    layout="wide" )
+
+# %% Live Reload
+from liveReload import live_reload
+live_reload()
+
+
+
+
+
+st.title("Online Food Order Dataset")
+st.write("The dataset contains information collected from an online food ordering platform over a period of time. It encompasses various attributes related to Occupation, Family Size, Feedback etc..")
+# create a link
+st.markdown("**Source:** [Kaggle](https://www.kaggle.com/datasets/sudarshan24byte/online-food-dataset/data)")
+
+st.divider()
 
 # Load dataset
 @st.cache_data
@@ -22,8 +40,8 @@ def load_data():
     return data
 
 data = load_data()
-st.write("## Dataset Description")
-st.write(data.describe())
+st.write("## Dataset")
+st.write(data)
 
 # Outlier Detection
 st.write("## Outlier Detection")
