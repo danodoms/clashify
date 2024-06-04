@@ -13,7 +13,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
 st.title("SVM x Decision Trees x Random Forest Performance Comparison")
-# st.markdown("by Dominador G. Dano Jr.")
+st.markdown("by Dominador G. Dano Jr.")
 
 # Load dataset
 @st.cache_data
