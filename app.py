@@ -28,6 +28,7 @@ st.sidebar.title("Online Food Order Dataset")
 st.sidebar.divider()
 st.sidebar.page_link("app.py", label="Home", icon="🏠")
 st.sidebar.page_link("app.py", label="Map", icon="🗺️")
+# st.sidebar.page_link("pages/🔍_Analyze_Data.py", label="Map", icon="🔍")
 
 
 
