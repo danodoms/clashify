@@ -21,7 +21,7 @@ st.set_page_config(
 
 # %% Live Reload
 from liveReload import live_reload
-live_reload()
+# live_reload()
 
 st.sidebar.title("Online Food Order Dataset")
 # st.sidebar.markdown("Use the options below to filter the data or change the visualization settings.")
@@ -82,32 +82,32 @@ st.map(data[['latitude', 'longitude']])
 
 
 # Outlier Detection
-st.write("## Outlier Detection")
+# st.write("## Outlier Detection")
 
-column_name = st.selectbox('Select column for outlier detection', data.columns)
-selected_data = data[column_name]
+# column_name = st.selectbox('Select column for outlier detection', data.columns)
+# selected_data = data[column_name]
 
-def detect_outliers_iqr(data):
-    Q1 = data.quantile(0.05)
-    Q3 = data.quantile(0.95)
-    IQR = Q3 - Q1
-    lower_bound = Q1 - 1.5 * IQR
-    upper_bound = Q3 + 1.5 * IQR
-    outliers = data[(data < lower_bound) | (data > upper_bound)]
-    return outliers
+# def detect_outliers_iqr(data):
+#     Q1 = data.quantile(0.05)
+#     Q3 = data.quantile(0.95)
+#     IQR = Q3 - Q1
+#     lower_bound = Q1 - 1.5 * IQR
+#     upper_bound = Q3 + 1.5 * IQR
+#     outliers = data[(data < lower_bound) | (data > upper_bound)]
+#     return outliers
 
-outliers_iqr = detect_outliers_iqr(selected_data)
+# outliers_iqr = detect_outliers_iqr(selected_data)
 
-st.write("Outliers detected using IQR method:")
-st.write(outliers_iqr)
+# st.write("Outliers detected using IQR method:")
+# st.write(outliers_iqr)
 
-plt.figure(figsize=(10, 5))
-sns.boxplot(selected_data)
-plt.title(f'Box plot of {column_name}')
-st.pyplot(plt)
+# plt.figure(figsize=(10, 5))
+# sns.boxplot(selected_data)
+# plt.title(f'Box plot of {column_name}')
+# st.pyplot(plt)
 
 # Binning and Label Encoding
-st.write("## Binning and Label Encoding")
+# st.write("## Binning and Label Encoding")
 
 binned_age = pd.cut(data["Age"],
             bins=[17, 22, 26, 29, 34],
@@ -122,23 +122,23 @@ data = label_encode_all(data, exclude_columns=['Age', 'Pin code'])
 data['Age'] = binned_age
 data['Pin code'] = binned_pinCode
 
-st.write("New Data after Binning and Label Encoding")
-st.write(data.head())
+# st.write("New Data after Binning and Label Encoding")
+# st.write(data.head())
 
-# Feature Selection
-st.write("## Feature Selection")
-st.write("### X vs X Feature Selection Using Cramer's V")
+# # Feature Selection
+# st.write("## Feature Selection")
+# st.write("### X vs X Feature Selection Using Cramer's V")
 
 fig, ax = plt.subplots(figsize=(10, 8))
 cramers_v_analysis(data, target_column='Feedback', threshold=0.6, top_n=10, plot=True)
-st.pyplot(fig)
+# st.pyplot(fig)
 
-st.write("### X vs Y Feature Selection using Chi Square Test")
+# st.write("### X vs Y Feature Selection using Chi Square Test")
 chi2_feature_significance(data, "Feedback", significance_threshold=0.05)
 
 # Model Comparison
-st.write("## Accuracy Comparison")
-st.write("### Initial Model Creation with SMOTE for Comparison")
+# st.write("## Accuracy Comparison")
+# st.write("### Initial Model Creation with SMOTE for Comparison")
 
 x = data.drop(columns=['Feedback'], axis=1)
 y = data['Feedback']
@@ -150,7 +150,7 @@ x_smote_featureSelection = x_smote.drop(['Family size', 'Gender', 'Pin code'], a
 st.write("## Interactive Model Testing")
 
 # Interactive feature selection
-st.write("### Feature Selection")
+st.write("### Decision Tree vs Random Forest vs SVM")
 selected_features = st.multiselect(
     'Select features to include in the model',
     options=x.columns,
@@ -183,19 +183,19 @@ if st.button('Evaluate'):
     col2.metric("Random Forest Accuracy", f"{results['Random Forest']*100:.2f}%")
     col3.metric("SVM Accuracy", f"{results['Support Vector Machines']*100:.2f}%")
 
-def display_model_results(model, model_name, x, y):
-    st.write(f"### {model_name}")
-    results = tabulize_model_results(model, model_name, x, y)
-    st.write(results)
+# def display_model_results(model, model_name, x, y):
+#     st.write(f"### {model_name}")
+#     results = tabulize_model_results(model, model_name, x, y)
+#     st.write(results)
 
-decision_tree_model = DecisionTreeClassifier(random_state=42)
-display_model_results(decision_tree_model, "Decision Tree", x_smote, y_smote)
-display_model_results(decision_tree_model, "Decision Tree (feature selection)", x_smote_featureSelection, y_smote)
+# decision_tree_model = DecisionTreeClassifier(random_state=42)
+# display_model_results(decision_tree_model, "Decision Tree", x_smote, y_smote)
+# display_model_results(decision_tree_model, "Decision Tree (feature selection)", x_smote_featureSelection, y_smote)
 
-random_forest_model = RandomForestClassifier(random_state=42)
-display_model_results(random_forest_model, "Random Forest", x_smote, y_smote)
-display_model_results(random_forest_model, "Random Forest with feature selection", x_smote_featureSelection, y_smote)
+# random_forest_model = RandomForestClassifier(random_state=42)
+# display_model_results(random_forest_model, "Random Forest", x_smote, y_smote)
+# display_model_results(random_forest_model, "Random Forest with feature selection", x_smote_featureSelection, y_smote)
 
-svm_model = SVC(random_state=42)
-display_model_results(svm_model, "Support Vector Machines", x_smote, y_smote)
-display_model_results(svm_model, "Support Vector Machines with feature selection", x_smote_featureSelection, y_smote)
+# svm_model = SVC(random_state=42)
+# display_model_results(svm_model, "Support Vector Machines", x_smote, y_smote)
+# display_model_results(svm_model, "Support Vector Machines with feature selection", x_smote_featureSelection, y_smote)
