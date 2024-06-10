@@ -8,8 +8,9 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 import pydeck as pdk
+import altair as alt
 
-# Custom functions (assumed to be provided)
+# Custom functions
 from library.model import balance_data
 
 # Set page configuration
@@ -55,7 +56,6 @@ if 'Delivery On Time' in data.columns:
     if delivery_on_time:
         data = data[data['Delivery On Time']]
 
-
 # Home Section
 if selection == "Home":
     st.title("Online Food Order Dataset")
@@ -66,11 +66,49 @@ if selection == "Home":
     """)
     st.markdown("**Source:** [Kaggle](https://www.kaggle.com/datasets/sudarshan24byte/online-food-dataset/data)")
     st.divider()
+    
+    # Age Distribution
+    st.write("### Age Distribution")
+    age_hist = alt.Chart(data).mark_bar().encode(
+        alt.X("Age:Q", bin=True),
+        y='count()'
+    ).properties(title="Age Distribution of Customers")
+    st.altair_chart(age_hist, use_container_width=True)
+    st.write("The age distribution shows that the majority of customers fall within the younger age groups, particularly between 20 and 30 years old. This indicates that the online food ordering platform is most popular among younger demographics.")
+
+    # Gender Distribution
+    st.write("### Gender Distribution")
+    gender_pie = alt.Chart(data).mark_arc().encode(
+        theta=alt.Theta(field="Gender", type="nominal", aggregate="count"),
+        color=alt.Color(field="Gender", type="nominal")
+    ).properties(title="Gender Distribution of Customers")
+    st.altair_chart(gender_pie, use_container_width=True)
+    st.write("The gender distribution pie chart reveals a higher percentage of female customers compared to male customers. This suggests that the platform might be more appealing to women or that women are more likely to use the online food ordering service.")
+
+    # Feedback Distribution
+    st.write("### Feedback Distribution")
+    if 'Feedback' in data.columns:
+        feedback_pie = alt.Chart(data).mark_arc().encode(
+            theta=alt.Theta(field="Feedback", type="nominal", aggregate="count"),
+            color=alt.Color(field="Feedback", type="nominal")
+        ).properties(title="Feedback Distribution")
+        st.altair_chart(feedback_pie, use_container_width=True)
+        st.write("The feedback distribution pie chart shows that the majority of the feedback is positive. This indicates a general satisfaction with the service provided by the online food ordering platform.")
+    else:
+        st.write("Feedback column is not available in the dataset.")
+
+    # Occupation vs. Family Size
+    st.write("### Occupation vs. Family Size")
+    occupation_vs_family = alt.Chart(data).mark_point().encode(
+        x='Occupation:N',
+        y='Family size:Q'
+    ).properties(title="Occupation vs. Family Size")
+    st.altair_chart(occupation_vs_family, use_container_width=True)
+    st.write("The scatter plot reveals that students and individuals with no income tend to come from smaller family sizes. This insight can help in understanding the customer segments better and tailoring marketing strategies accordingly.")
 
 # Dataset Section
 if selection == "Dataset":
     st.title("Dataset")
-    st.write("## Dataset")
     st.write("""
     This section displays the raw dataset containing information about online food orders. 
     You can scroll through the table to see all the data points collected.
