@@ -7,6 +7,7 @@ from sklearn.svm import SVC
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
+import pydeck as pdk
 
 # Custom functions (assumed to be provided)
 from library.model import balance_data
@@ -29,6 +30,31 @@ selection = st.sidebar.radio("Go to", sections)
 
 # Load dataset
 data = pd.read_csv('onlinefoods.csv')
+
+# Sidebar filters and interactivity
+st.sidebar.subheader("Filters")
+
+# Date range selector
+date_column = 'Order Date'  # Example date column name
+if date_column in data.columns:
+    min_date = data[date_column].min()
+    max_date = data[date_column].max()
+    start_date, end_date = st.sidebar.date_input("Select date range", [min_date, max_date])
+    data = data[(data[date_column] >= start_date) & (data[date_column] <= end_date)]
+
+# Numeric filters
+for column in data.select_dtypes(include=[np.number]).columns:
+    min_val = data[column].min()
+    max_val = data[column].max()
+    selected_range = st.sidebar.slider(f"Filter {column}", float(min_val), float(max_val), (float(min_val), float(max_val)))
+    data = data[(data[column] >= selected_range[0]) & (data[column] <= selected_range[1])]
+
+# Boolean filters (example)
+if 'Delivery On Time' in data.columns:
+    delivery_on_time = st.sidebar.checkbox("Only show orders delivered on time", value=True)
+    if delivery_on_time:
+        data = data[data['Delivery On Time']]
+
 
 # Home Section
 if selection == "Home":
@@ -54,12 +80,44 @@ if selection == "Dataset":
 # Map Section
 if selection == "Map":
     st.title("Map")
-    st.write("## Map")
+    st.write("## Top View")
     st.write("""
     This map shows the locations where data was collected. 
     It provides a geographic distribution of the orders.
     """)
     st.map(data[['latitude', 'longitude']])
+
+    # Define the initial view state for the map
+    view_state = pdk.ViewState(
+        latitude=data['latitude'].mean(),
+        longitude=data['longitude'].mean(),
+        zoom=11,
+        pitch=50,
+    )
+
+    # Define the layer for the map
+    layer = pdk.Layer(
+        'HexagonLayer',
+        data=data[['latitude', 'longitude']],
+        get_position='[longitude, latitude]',
+        radius=200,
+        elevation_scale=4,
+        elevation_range=[0, 1000],
+        pickable=True,
+        extruded=True,
+    )
+
+    # Define the deck
+    r = pdk.Deck(
+        layers=[layer],
+        initial_view_state=view_state,
+        tooltip={"text": "{position}\nElevation: {elevationValue}"}
+    )
+
+    st.write("## With distribution")
+
+    # Render the map
+    st.pydeck_chart(r)
 
 # Column Visualizations Section
 if selection == "Column Visualizations":
@@ -69,12 +127,16 @@ if selection == "Column Visualizations":
     It includes different types of charts and plots to help you understand the distribution and characteristics of the data.
     """)
 
+    chart_type = st.sidebar.selectbox("Select Chart Type", ["Bar Chart", "Line Chart", "Area Chart"])
+
     # Numeric columns
     st.write("### Numeric Columns")
     for column in data.select_dtypes(include=[np.number]).columns:
         st.write(f"#### {column}")
-        if data[column].nunique() > 20:
+        if chart_type == "Line Chart" or data[column].nunique() > 20:
             st.line_chart(data[column])
+        elif chart_type == "Area Chart":
+            st.area_chart(data[column])
         else:
             st.bar_chart(data[column].value_counts())
 
@@ -97,7 +159,7 @@ if selection == "Column Visualizations":
     
     # Family size distribution
     st.write("#### Family Size Distribution")
-    st.area_chart(data['Family size'].value_counts())
+    st.area_chart(data['Family size'].value_counts().sort_index())
     
     # Feedback distribution
     if 'Feedback' in data.columns:
