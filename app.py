@@ -23,6 +23,7 @@ st.set_page_config(
 # Sidebar navigation
 st.sidebar.title("Online Food Order Dataset")
 st.sidebar.write("Dominador G. Dano Jr.")
+st.sidebar.write("[Github repository](https://github.com/domsdano/clashify)")
 st.sidebar.divider()
 st.sidebar.subheader("Navigation")
 
